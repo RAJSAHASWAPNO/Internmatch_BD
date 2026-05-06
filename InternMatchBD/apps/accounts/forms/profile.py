@@ -11,7 +11,13 @@ class StudentProfileEditForm(forms.ModelForm):
         model = User
         fields = ["first_name", "last_name", "gender"]
 
-
+class StudentProfileForm(forms.ModelForm):
+    class Meta:
+        model = StudentProfile
+        fields = ["resume", "bio", "skills"]
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Tell us about yourself...'}),
+        }
 
 class EmployerProfileForm(forms.ModelForm):
     class Meta:
