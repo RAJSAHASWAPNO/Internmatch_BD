@@ -1,0 +1,14 @@
+<div class="form-group row mb-3">
+  <label for="{{ field.id_for_label }}" class="col-md-3 col-form-label">{{ field.label }}</label>
+  <div class="col-md-9">
+    {{ field }}
+    {% if field.errors %}
+      <div class="invalid-feedback d-block">
+        {% for error in field.errors %}{{ error }}{% endfor %}
+      </div>
+    {% endif %}
+    {% if field.help_text %}
+      <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+    {% endif %}
+  </div>
+</div>

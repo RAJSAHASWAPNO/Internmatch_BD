@@ -1,0 +1,3 @@
+<span class="badge {% if job_type %}badge-{% if job_type == 'full-time' %}primary{% elif job_type == 'part-time' %}warning{% else %}info{% endif %}{% else %}secondary{% endif %}">
+  {{ job_type|default:"Not Specified" }}
+</span>
