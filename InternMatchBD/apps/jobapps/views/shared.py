@@ -7,9 +7,7 @@ from jobapp.models import Applicant, BookmarkJob, Job
 
 @login_required(login_url=reverse_lazy('account:login'))
 def dashboard_view(request):
-    """
-    Handle Dashboard View
-    """
+   
     jobs = []
     savedjobs = []
     appliedjobs = []
