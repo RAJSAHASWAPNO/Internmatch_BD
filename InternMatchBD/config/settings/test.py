@@ -1,4 +1,4 @@
-from .base import * 
+from .base import *  
 
 DEBUG = False
 
@@ -14,3 +14,4 @@ PASSWORD_HASHERS = [
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
