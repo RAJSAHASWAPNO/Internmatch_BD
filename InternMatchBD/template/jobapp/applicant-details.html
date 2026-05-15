@@ -5,7 +5,7 @@
 
 
     <!-- HOME -->
-    <section class="section-hero overlay inner-page bg-image" style="background-image: url('{% static 'images/hero_1.jpg' %}');" id="home-section">
+    <section class="section-hero overlay inner-page bg-image" style="background-image: url('{% static 'images/hero_1.webp' %}');" id="home-section">
       <div class="container">
         <div class="row">
           <div class="col-md-7">
@@ -24,13 +24,28 @@
         <div class="row">
           <div class="col-lg-3 mr-auto">
             <div class="border p-4 rounded">
+              {% if applicant.employee_profile.skills.all %}
+              <h5 class="mb-3">Skills</h5>
               <ul class="list-unstyled block__47528 mb-0">
-                <li><span class="active">Graphic Design</span></li>
-                <li><a href="#">Topic 1</a></li>
-                <li><a href="#">Topic 2</a></li>
-          
+                {% for skill in applicant.employee_profile.skills.all %}
+                <li><span class="badge badge-secondary">{{ skill.name }}</span></li>
+                {% endfor %}
               </ul>
+              {% else %}
+              <p class="text-muted">No skills added</p>
+              {% endif %}
             </div>
+            {% if matched_skills is not None %}
+            <div class="border p-4 rounded mt-3">
+              <h5 class="mb-3">Skill Match</h5>
+              <p><strong>{{ matched_skills }}/{{ required_skills }} skills match</strong></p>
+              <div class="progress">
+                <div class="progress-bar bg-info" role="progressbar" style="width: {{ match_percentage }}%" aria-valuenow="{{ match_percentage }}" aria-valuemin="0" aria-valuemax="100">
+                  {{ match_percentage }}%
+                </div>
+              </div>
+            </div>
+            {% endif %}
           </div>
           <div class="col-lg-8">
             <span class="text-primary d-block mb-5"><span class="icon-magnet display-1"></span></span>
@@ -43,6 +58,9 @@
                     Female
                 {% endif %}
             </p>
+            {% if applicant.employee_profile.bio %}
+            <p><h3>Bio :</h3>{{ applicant.employee_profile.bio }}</p>
+            {% endif %}
             <p><a href="mailto:{{ applicant.email }}" class="btn btn-primary btn-md mt-4">Contact</a></p>
           </div>
         </div>

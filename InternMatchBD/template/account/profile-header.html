@@ -2,7 +2,7 @@
 <div class="profile-header-card bg-white border rounded p-4 mb-4">
     <div class="row align-items-center">
         <div class="col-auto">
-            {% if profile_type == 'student' %}
+            {% if profile_type == 'employee' %}
             <div class="profile-avatar">
                 <div
                     class="profile-avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center font-weight-bold">
@@ -25,7 +25,7 @@
         </div>
         <div class="col pl-4">
             <h2 class="display-5 font-weight-bold mb-1">
-                {% if profile_type == 'student' %}
+                {% if profile_type == 'employee' %}
                 {{ profile.user.get_full_name }}
                 {% else %}
                 {{ profile.user.first_name }} {{ profile.user.last_name }} <small
@@ -33,7 +33,7 @@
                 {% endif %}
             </h2>
             <div class="social-links d-flex gap-2">
-                {% if profile_type == 'student' %}
+                {% if profile_type == 'employee' %}
                 {% if profile.social_linkedin %}<a href="{{ profile.social_linkedin }}" target="_blank"
                     class="btn btn-outline-primary btn-sm px-3"><i class="fab fa-linkedin mr-1"></i> LinkedIn</a>{% endif %}
                 {% if profile.social_github %}<a href="{{ profile.social_github }}" target="_blank"

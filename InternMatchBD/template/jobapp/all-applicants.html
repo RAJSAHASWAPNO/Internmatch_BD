@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<section class="section-hero overlay inner-page bg-image" style="background-image: url('{% static 'images/hero_1.jpg' %}');"
+<section class="section-hero overlay inner-page bg-image" style="background-image: url('{% static 'images/hero_1.webp' %}');"
     id="home-section">
     <div class="container">
         <div class="row">
@@ -29,6 +29,7 @@
                                     <th>Name</th>
                                     <th>Job Title</th>
                                     <th>Applied Date</th>
+                                    <th>Skills Match</th>
                                     <th>Status</th>
                                     <th>Action</th>
                                     <th>View </th>
@@ -43,6 +44,9 @@
                                     <td class="text-center"><a href="{% url 'account:candidate-profile' applicant.user.id %}">{{ applicant.user.get_full_name }}</a></td>
                                     <td>{{ applicant.job.title }}</td>
                                     <td>{{ applicant.created_at | date:'M d, Y' }}</td>
+                                    <td>
+                                        <span class="badge badge-info">{{ applicant.matched_skills }}/{{ applicant.required_skills }} ({{ applicant.match_percentage }}%)</span>
+                                    </td>
                                     <td>
                                         {% if applicant.status == 'pending' %}
                                             <span class="badge badge-warning">Pending</span>
@@ -71,7 +75,7 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <a class="btn btn-info btn-sm" href="{% url 'jobapp:applicant-details' applicant.user.id %}"
+                                        <a class="btn btn-info btn-sm" href="{% url 'jobapp:applicant-details' applicant.user.id %}?applicant_id={{ applicant.id }}"
                                                 role="button">
                                             Details
                                         </a>

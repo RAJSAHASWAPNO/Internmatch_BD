@@ -4,7 +4,7 @@
 {% block content %}
 
 <section class="section-hero overlay inner-page bg-image"
-    style="background-image: url('{% static 'images/hero_1.jpg' %}');" id="home-section">
+    style="background-image: url('{% static 'images/hero_1.webp' %}');" id="home-section">
     <div class="container">
         <div class="row">
             <div class="col-md-7">
@@ -108,7 +108,7 @@
                     {% else %}
                     <p class="m-5">You have not any job yet !! <a href="{% url 'jobapp:create-job' %}">Create a new one.</a></p>
                     {% endif %}
-                    {% elif user.role == "student" %}
+                    {% elif user.role == "employee" %}
 
 
                     <ul class="mb-3 nav nav-tabs" id="myTab" role="tablist">

@@ -10,7 +10,7 @@ thousands of listings and apply today!{% endblock %}
 
 <!-- HOME -->
 <section class="home-section section-hero overlay bg-image"
-  style="background-image: url('{% static 'images/hero_1.jpg' %}');" id="home-section">
+  style="background-image: url('{% static 'images/hero_1.webp' %}');" id="home-section">
 
   <div class="container">
     <div class="row align-items-center justify-content-center">
@@ -92,7 +92,7 @@ thousands of listings and apply today!{% endblock %}
       <li class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
         <a href="{% url 'jobapp:single-job' job.id %}"></a>
         <div class="job-listing-logo">
-          <img src="{% static 'images/i.jpg' %}" alt="Free Website Template by Free-Template.co" class="img-fluid">
+          <img src="{% static 'images/i.webp' %}" alt="Free Website Template by Free-Template.co" class="img-fluid">
         </div>
 
         <div class="job-listing-about d-sm-flex custom-width w-100 justify-content-between mx-4">
@@ -131,7 +131,7 @@ thousands of listings and apply today!{% endblock %}
 </section>
 
 <section class="py-5 bg-image overlay-primary fixed overlay"
-  style="background-image: url('{% static 'images/hero_1.jpg' %}');">
+  style="background-image: url('{% static 'images/hero_1.webp' %}');">
   <div class="container">
     {% if request.user.role == "employer" %}
     <div class="row align-items-center">
@@ -143,7 +143,7 @@ thousands of listings and apply today!{% endblock %}
         <a href="{% url 'jobapp:create-job' %}" class="btn btn-warning btn-block btn-lg">Post Your Job</a>
       </div>
     </div>
-    {% elif request.user.role == "student" %}
+    {% elif request.user.role == "employee" %}
     <div class="row align-items-center">
       <div class="col-md-8">
         <h2 class="text-white">Looking For A Job?</h2>
@@ -160,7 +160,7 @@ thousands of listings and apply today!{% endblock %}
         <p class="mb-0 text-white lead">Browse available job opportunities and apply</p>
       </div>
       <div class="col-md-3 ml-auto">
-        <a href="{% url 'account:student-registration' %}" class="btn btn-warning btn-block btn-lg">Sign Up</a>
+        <a href="{% url 'account:employee-registration' %}" class="btn btn-warning btn-block btn-lg">Sign Up</a>
       </div>
     </div>
     {% endif %}
@@ -233,7 +233,7 @@ thousands of listings and apply today!{% endblock %}
                           <li id="next" class="job-listing d-block d-sm-flex pb-3 pb-sm-0 align-items-center">
                             <a href="/job/${job.id}/"></a>
                               <div class="job-listing-logo">
-                                <img src="{% static 'images/i.jpg' %}" alt="Free Website Template by Free-Template.co"
+                                <img src="{% static 'images/i.webp' %}" alt="Free Website Template by Free-Template.co"
                                   class="img-fluid">
                               </div>
 
