@@ -5,18 +5,20 @@
             {% if profile_type == 'employee' %}
             <div class="profile-avatar">
                 <div
-                    class="profile-avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center font-weight-bold">
-                    {{ profile.user.first_name|first }}{{ profile.user.last_name|first }}
+                    class="profile-avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center font-weight-bold"
+                    style="width: 80px; height: 80px; font-size: 2rem;">
+                    {{ profile.user.first_name|first|upper }}{{ profile.user.last_name|first|upper }}
                 </div>
             </div>
             {% else %}
             <div class="company-logo-container">
                 {% if profile.company_logo %}
                 <img src="{{ profile.company_logo.url }}" alt="Company Logo"
-                    class="profile-company-logo img-fluid rounded border p-1">
+                    class="profile-company-logo img-fluid rounded border p-1" style="max-width: 80px;">
                 {% else %}
                 <div
-                    class="profile-logo-placeholder bg-light border rounded d-flex align-items-center justify-content-center">
+                    class="profile-logo-placeholder bg-light border rounded d-flex align-items-center justify-content-center"
+                    style="width: 80px; height: 80px;">
                     <span class="icon-magnet text-primary"></span>
                 </div>
                 {% endif %}
@@ -24,7 +26,7 @@
             {% endif %}
         </div>
         <div class="col pl-4">
-            <h2 class="display-5 font-weight-bold mb-1">
+            <h2 class="display-5 font-weight-bold mb-2">
                 {% if profile_type == 'employee' %}
                 {{ profile.user.get_full_name }}
                 {% else %}
@@ -32,14 +34,31 @@
                     class="text-muted text-capitalize">(Employer)</small>
                 {% endif %}
             </h2>
-            <div class="social-links d-flex gap-2">
+            <div class="social-links d-flex gap-3">
                 {% if profile_type == 'employee' %}
-                {% if profile.social_linkedin %}<a href="{{ profile.social_linkedin }}" target="_blank"
-                    class="btn btn-outline-primary btn-sm px-3"><i class="fab fa-linkedin mr-1"></i> LinkedIn</a>{% endif %}
-                {% if profile.social_github %}<a href="{{ profile.social_github }}" target="_blank"
-                    class="btn btn-outline-dark btn-sm px-3"><i class="fab fa-github mr-1"></i> GitHub</a>{% endif %}
+                {% if profile.social_linkedin %}
+                <a href="{{ profile.social_linkedin }}" target="_blank" rel="noopener noreferrer"
+                    class="btn btn-sm btn-outline-primary px-3" title="Visit LinkedIn Profile">
+                    <i class="fab fa-linkedin mr-1"></i> LinkedIn
+                </a>
+                {% endif %}
+                {% if profile.social_github %}
+                <a href="{{ profile.social_github }}" target="_blank" rel="noopener noreferrer"
+                    class="btn btn-sm btn-outline-dark px-3" title="Visit GitHub Profile">
+                    <i class="fab fa-github mr-1"></i> GitHub
+                </a>
+                {% endif %}
+                {% if not profile.social_linkedin and not profile.social_github %}
+                <span class="text-muted small">Social profiles not added yet</span>
+                {% endif %}
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .gap-3 {
+        gap: 1rem;
+    }
+</style>
