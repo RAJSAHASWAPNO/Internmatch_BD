@@ -10,10 +10,7 @@ from jobapp.permission import EmployeeRequiredMixin
 
 
 class ApplyJobView(EmployeeRequiredMixin, View):
-    """
-    Employee applies to a job. Kept as View (not CreateView)
-    because it has custom duplicate-prevention logic.
-    """
+   
     def post(self, request, id):
         user = request.user
         job = get_object_or_404(Job, id=id)
@@ -32,7 +29,7 @@ class ApplyJobView(EmployeeRequiredMixin, View):
 
 
 class DeleteBookmarkView(EmployeeRequiredMixin, DeleteView):
-    """Employee deletes a saved bookmark."""
+   
     model = BookmarkJob
     pk_url_kwarg = 'id'
     success_url = reverse_lazy('jobapp:dashboard')
@@ -46,10 +43,7 @@ class DeleteBookmarkView(EmployeeRequiredMixin, DeleteView):
 
 
 class JobBookmarkView(EmployeeRequiredMixin, View):
-    """
-    Employee bookmarks a job. Kept as View (not CreateView)
-    because it has custom duplicate-prevention logic.
-    """
+    
     def post(self, request, id):
         user = request.user
         job = get_object_or_404(Job, id=id)
