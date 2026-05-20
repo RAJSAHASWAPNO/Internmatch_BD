@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  .contact-box {
+    background: #ffffff;
+    border-left: 4px solid #28a745;
+    transition: all 0.3s ease;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .contact-box:hover {
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.15);
+    border-left-color: #1e7e34;
+  }
+
+  .contact-icon {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 1rem;
+  }
+
+  .contact-label {
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-value {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+</style>
+
+<!-- HERO SECTION -->
+<section class="section-hero overlay inner-page bg-image" style="background-image: url('{% static 'images/hero_1.jpg' %}');" id="home-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <h1 class="text-white font-weight-bold" style="font-size: 3.5rem;">Get In Touch</h1>
+        <div class="custom-breadcrumbs">
+          <a href="{% url 'jobapp:home' %}">Home</a> <span class="mx-2 slash">/</span>
+          <span class="text-white"><strong>Contact</strong></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section class="site-section">
+  <div class="container">
+    <div class="row mb-5 justify-content-center">
+      <div class="col-lg-9 text-center">
+        <h2 class="section-title">Contact Information</h2>
+        <p class="subtitle" style="font-size: 1.1rem; margin-bottom: 3rem;">
+          Have questions? We'd love to hear from you. Here's how you can reach us.
+        </p>
+      </div>
+    </div>
+
+    <!-- CONTACT DETAILS -->
+    <div class="row">
+      <!-- Email -->
+      <div class="col-md-4 mb-4">
+        <div class="contact-box rounded">
+          <div class="text-center">
+            <div class="contact-icon">
+              <span class="icon-contact_mail"></span>
+            </div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value">
+              <a href="mailto:{{ contact_info.email }}" style="color: #2c3e50; text-decoration: none;">
+                {{ contact_info.email }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="col-md-4 mb-4">
+        <div class="contact-box rounded">
+          <div class="text-center">
+            <div class="contact-icon">
+              <span class="icon-contact_phone"></span>
+            </div>
+            <div class="contact-label">Phone</div>
+            <div class="contact-value">
+              <a href="tel:{{ contact_info.phone }}" style="color: #2c3e50; text-decoration: none;">
+                {{ contact_info.phone }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="col-md-4 mb-4">
+        <div class="contact-box rounded">
+          <div class="text-center">
+            <div class="contact-icon">
+              <span class="icon-room"></span>
+            </div>
+            <div class="contact-label">Location</div>
+            <div class="contact-value">{{ contact_info.address }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK HELP SECTION -->
+<section class="site-section" style="background: #f8f9fa;">
+  <div class="container">
+    <div class="row mb-5 justify-content-center">
+      <div class="col-lg-9">
+        <h2 class="section-title text-center">How We Can Help</h2>
+        <div class="bg-white p-5 rounded shadow-sm border border-light" style="border-top: 4px solid #28a745;">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div style="padding: 1rem;">
+                <h5 class="font-weight-bold text-dark mb-2">
+                  <span class="icon-check_circle" style="color: #28a745; margin-right: 0.5rem;"></span>
+                  For Employers
+                </h5>
+                <p class="text-dark" style="font-size: 0.95rem; line-height: 1.6;">
+                  Post job opportunities, manage applications, and connect with qualified candidates for your company.
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div style="padding: 1rem;">
+                <h5 class="font-weight-bold text-dark mb-2">
+                  <span class="icon-check_circle" style="color: #28a745; margin-right: 0.5rem;"></span>
+                  For Job Seekers
+                </h5>
+                <p class="text-dark" style="font-size: 0.95rem; line-height: 1.6;">
+                  Explore internship opportunities, build your profile, and apply for positions matching your skills.
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div style="padding: 1rem;">
+                <h5 class="font-weight-bold text-dark mb-2">
+                  <span class="icon-check_circle" style="color: #28a745; margin-right: 0.5rem;"></span>
+                  Support & Feedback
+                </h5>
+                <p class="text-dark" style="font-size: 0.95rem; line-height: 1.6;">
+                  Reach out to us with any questions, feedback, or feature requests regarding our platform.
+                </p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div style="padding: 1rem;">
+                <h5 class="font-weight-bold text-dark mb-2">
+                  <span class="icon-check_circle" style="color: #28a745; margin-right: 0.5rem;"></span>
+                  Partnerships
+                </h5>
+                <p class="text-dark" style="font-size: 0.95rem; line-height: 1.6;">
+                  Interested in partnering with InternMatch BD? Contact us to discuss collaboration opportunities.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
