@@ -26,7 +26,7 @@
         <h2 class="mb-4 text-center">Update Profile</h2>
         {% include 'messages.html' %}
 
-        {% if form.errors or profile_form.errors %}
+        {% if form.errors or profile_form.errors or education_formset.non_form_errors or experience_formset.non_form_errors or certification_formset.non_form_errors or project_formset.non_form_errors %}
         {% for field in form %}
         {% for error in field.errors %}
         <div class="alert alert-danger alert-dismissable">
@@ -43,10 +43,25 @@
         </div>
         {% endfor %}
         {% endfor %}
+        {% for error in education_formset.non_form_errors %}
+        <div class="alert alert-danger alert-dismissable">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
+        {% for error in experience_formset.non_form_errors %}
+        <div class="alert alert-danger alert-dismissable">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
         {% endif %}
+
         <form method="POST" enctype="multipart/form-data" class="p-4 border rounded">
           {% csrf_token %}
-          <h4 class="mb-3">Personal Information</h4>
+
+          <!-- PERSONAL INFORMATION SECTION -->
+          <h4 class="mb-3 border-bottom pb-2">Personal Information</h4>
           {% for field in form %}
           {% if field.name == 'gender' %}
           <div class="row form-group mb-4">
@@ -58,7 +73,7 @@
                 <label class="form-check-label" for="male">Male</label>
               </div>
               <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="gender" id="female" value="F"
+                <input class="form-check-input" type="radio" name="female" id="female" value="F"
                   {% if field.value == 'F' %} checked {% endif %}>
                 <label class="form-check-label" for="female">Female</label>
               </div>
@@ -76,31 +91,292 @@
           {% endif %}
           {% endfor %}
 
+          <!-- CONTACT INFORMATION SECTION -->
           <hr class="my-4">
-          <h4 class="mb-3">Professional Information</h4>
-          {% for field in profile_form %}
+          <h4 class="mb-3 border-bottom pb-2">Contact Information</h4>
+          <div class="row form-group">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="text-black" for="id_phone_number">Phone Number</label>
+              <input type="tel" class="form-control" name="phone_number" id="id_phone_number"
+                value="{{ profile_form.phone_number.value|default_if_none:'' }}"
+                placeholder="+1 (555) 000-0000">
+            </div>
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="text-black" for="id_location">Location</label>
+              <input type="text" class="form-control" name="location" id="id_location"
+                value="{{ profile_form.location.value|default_if_none:'' }}"
+                placeholder="City, Country">
+            </div>
+          </div>
+
+          <!-- SOCIAL LINKS SECTION -->
+          <hr class="my-4">
+          <h4 class="mb-3 border-bottom pb-2">Social Links (Optional)</h4>
+          <div class="row form-group">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="text-black" for="id_social_linkedin">LinkedIn Profile</label>
+              <input type="url" class="form-control" name="social_linkedin" id="id_social_linkedin"
+                value="{{ profile_form.social_linkedin.value|default_if_none:'' }}"
+                placeholder="https://linkedin.com/in/yourprofile">
+            </div>
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="text-black" for="id_social_github">GitHub Profile</label>
+              <input type="url" class="form-control" name="social_github" id="id_social_github"
+                value="{{ profile_form.social_github.value|default_if_none:'' }}"
+                placeholder="https://github.com/yourprofile">
+            </div>
+          </div>
+
+          <!-- PROFESSIONAL INFORMATION SECTION -->
+          <hr class="my-4">
+          <h4 class="mb-3 border-bottom pb-2">Professional Information</h4>
+          
+          <!-- Availability Status -->
+          <div class="row form-group">
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="text-black" for="id_availability_status">Availability Status</label>
+              <select class="form-control" name="availability_status" id="id_availability_status">
+                <option value="available" {% if profile_form.availability_status.value == 'available' %}selected{% endif %}>Available</option>
+                <option value="not_available" {% if profile_form.availability_status.value == 'not_available' %}selected{% endif %}>Not Available</option>
+                <option value="open_to_offers" {% if profile_form.availability_status.value == 'open_to_offers' %}selected{% endif %}>Open to Offers</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3 mb-md-0">
+              <label class="text-black" for="id_languages">Languages</label>
+              <textarea class="form-control" name="languages" id="id_languages" rows="2"
+                placeholder="e.g., English, French, Spanish (separated by commas or newlines)">{{ profile_form.languages.value|default_if_none:'' }}</textarea>
+            </div>
+          </div>
+
+          <!-- Bio -->
           <div class="row form-group">
             <div class="col-md-12 mb-3 mb-md-0">
-              <label class="text-black" for="id_{{ field.name }}">{{ field.label }}</label>
-              {% if field.name == 'bio' %}
-                {{ field }}
-              {% elif field.name == 'resume' %}
-                <div class="custom-file">
-                   {{ field }}
-                </div>
-                {% if field.value %}
-                  <p class="mt-2 text-muted">Current: <a href="{{ field.value.url }}" target="_blank">{{ field.value.name }}</a></p>
-                {% endif %}
-              {% else %}
-                {{ field }}
-              {% endif %}
-              {% if field.help_text %}
-                <small class="form-text text-muted">{{ field.help_text }}</small>
+              <label class="text-black" for="id_bio">About Me</label>
+              <textarea class="form-control" name="bio" id="id_bio" rows="4"
+                placeholder="Tell us about yourself...">{{ profile_form.bio.value|default_if_none:'' }}</textarea>
+            </div>
+          </div>
+
+          <!-- Resume -->
+          <div class="row form-group">
+            <div class="col-md-12 mb-3 mb-md-0">
+              <label class="text-black" for="id_resume">Resume</label>
+              <div class="custom-file">
+                <input type="file" class="form-control-file" name="resume" id="id_resume" accept=".pdf,.doc,.docx">
+              </div>
+              {% if profile_form.resume.value %}
+              <p class="mt-2 text-muted">Current: <a href="{{ profile_form.resume.value.url }}" target="_blank">{{ profile_form.resume.value.name }}</a></p>
               {% endif %}
             </div>
           </div>
-          {% endfor %}
 
+          <!-- Skills -->
+          <div class="row form-group">
+            <div class="col-md-12 mb-3 mb-md-0">
+              <label class="text-black d-block mb-2">Skills</label>
+              <div class="skills-checkbox">
+                {{ profile_form.skills }}
+              </div>
+            </div>
+          </div>
+
+          <!-- EDUCATION SECTION -->
+          <hr class="my-4">
+          <h4 class="mb-3 border-bottom pb-2">Education</h4>
+          <div id="education-formset" class="formset">
+            {{ education_formset.management_form }}
+            {% for form in education_formset %}
+            <div class="education-form card mb-3 p-3">
+              {{ form.id }}
+              <div class="row form-group">
+                <div class="col-md-6">
+                  <label class="text-black">Degree</label>
+                  {{ form.degree }}
+                </div>
+                <div class="col-md-6">
+                  <label class="text-black">Field of Study</label>
+                  {{ form.field_of_study }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <label class="text-black">Institution</label>
+                  {{ form.institution }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-4">
+                  <label class="text-black">Start Date</label>
+                  {{ form.start_date }}
+                </div>
+                <div class="col-md-4">
+                  <label class="text-black">End Date</label>
+                  {{ form.end_date }}
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check mt-4">
+                    {{ form.is_current }}
+                    <label class="form-check-label" for="{{ form.is_current.id_for_label }}">
+                      Currently Studying
+                    </label>
+                  </div>
+                </div>
+              </div>
+              {% if form.DELETE %}
+              <div class="form-check">
+                {{ form.DELETE }}
+                <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">
+                  Delete this entry
+                </label>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- EXPERIENCE SECTION -->
+          <hr class="my-4">
+          <h4 class="mb-3 border-bottom pb-2">Work Experience</h4>
+          <div id="experience-formset" class="formset">
+            {{ experience_formset.management_form }}
+            {% for form in experience_formset %}
+            <div class="experience-form card mb-3 p-3">
+              {{ form.id }}
+              <div class="row form-group">
+                <div class="col-md-6">
+                  <label class="text-black">Job Title</label>
+                  {{ form.job_title }}
+                </div>
+                <div class="col-md-6">
+                  <label class="text-black">Company</label>
+                  {{ form.company }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <label class="text-black">Description</label>
+                  {{ form.description }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-4">
+                  <label class="text-black">Start Date</label>
+                  {{ form.start_date }}
+                </div>
+                <div class="col-md-4">
+                  <label class="text-black">End Date</label>
+                  {{ form.end_date }}
+                </div>
+                <div class="col-md-4">
+                  <div class="form-check mt-4">
+                    {{ form.is_current }}
+                    <label class="form-check-label" for="{{ form.is_current.id_for_label }}">
+                      Currently Working
+                    </label>
+                  </div>
+                </div>
+              </div>
+              {% if form.DELETE %}
+              <div class="form-check">
+                {{ form.DELETE }}
+                <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">
+                  Delete this entry
+                </label>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- CERTIFICATIONS SECTION -->
+          <hr class="my-4">
+          <h4 class="mb-3 border-bottom pb-2">Certifications & Credentials</h4>
+          <div id="certification-formset" class="formset">
+            {{ certification_formset.management_form }}
+            {% for form in certification_formset %}
+            <div class="certification-form card mb-3 p-3">
+              {{ form.id }}
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <label class="text-black">Certification Title</label>
+                  {{ form.title }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-6">
+                  <label class="text-black">Issuing Organization</label>
+                  {{ form.issuer }}
+                </div>
+                <div class="col-md-6">
+                  <label class="text-black">Credential URL (Optional)</label>
+                  {{ form.credential_url }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-6">
+                  <label class="text-black">Issue Date</label>
+                  {{ form.issue_date }}
+                </div>
+                <div class="col-md-6">
+                  <label class="text-black">Expiry Date (Optional)</label>
+                  {{ form.expiry_date }}
+                </div>
+              </div>
+              {% if form.DELETE %}
+              <div class="form-check">
+                {{ form.DELETE }}
+                <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">
+                  Delete this entry
+                </label>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- PROJECTS SECTION -->
+          <hr class="my-4">
+          <h4 class="mb-3 border-bottom pb-2">Projects & Portfolio</h4>
+          <div id="project-formset" class="formset">
+            {{ project_formset.management_form }}
+            {% for form in project_formset %}
+            <div class="project-form card mb-3 p-3">
+              {{ form.id }}
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <label class="text-black">Project Title</label>
+                  {{ form.title }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <label class="text-black">Description</label>
+                  {{ form.description }}
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-md-6">
+                  <label class="text-black">Project URL</label>
+                  {{ form.url }}
+                </div>
+                <div class="col-md-6">
+                  <label class="text-black">Technologies Used</label>
+                  {{ form.technologies }}
+                </div>
+              </div>
+              {% if form.DELETE %}
+              <div class="form-check">
+                {{ form.DELETE }}
+                <label class="form-check-label" for="{{ form.DELETE.id_for_label }}">
+                  Delete this entry
+                </label>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- SUBMIT BUTTON -->
           <div class="row form-group mt-4">
             <div class="col-md-12">
               <input type="submit" value="Update Profile" class="btn px-4 btn-primary text-white">
@@ -112,5 +388,31 @@
     </div>
   </div>
 </section>
+
+<style>
+  .education-form,
+  .experience-form,
+  .certification-form,
+  .project-form {
+    border-left: 4px solid #0066cc !important;
+  }
+
+  .form-control,
+  textarea.form-control {
+    border: 1px solid #ddd;
+    padding: 0.5rem;
+    border-radius: 4px;
+  }
+
+  .skills-checkbox input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
+
+  .skills-checkbox label {
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+  }
+</style>
 
 {% endblock %}
