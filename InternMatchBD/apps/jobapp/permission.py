@@ -23,7 +23,7 @@ def user_is_employee(function):
 
 
 class EmployerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Allows access only to authenticated employers."""
+   
     login_url = reverse_lazy('account:login')
 
     def test_func(self):
@@ -31,7 +31,7 @@ class EmployerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
 
 
 class EmployeeRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
-    """Allows access only to authenticated employees."""
+   
     login_url = reverse_lazy('account:login')
 
     def test_func(self):

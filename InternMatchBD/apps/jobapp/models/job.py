@@ -36,6 +36,12 @@ class Skill(models.Model):
         return self.name
 
 
+class ActiveJobManager(models.Manager):
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+
 class Job(TimeStampedModel, SoftDeleteModel):
     user = models.ForeignKey(User, related_name='User', on_delete=models.CASCADE)
     title = models.CharField(max_length=300, db_index=True)
@@ -54,6 +60,11 @@ class Job(TimeStampedModel, SoftDeleteModel):
     last_date = models.DateField()
     is_published = models.BooleanField(default=False)
     is_closed = models.BooleanField(default=False)
+
+    # Use custom manager by default
+    objects = ActiveJobManager()
+    # Also provide access to all objects including deleted
+    all_objects = models.Manager()
 
     def save(self, *args, **kwargs):
         # Invalidate cache before saving

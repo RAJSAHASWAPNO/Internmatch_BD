@@ -21,7 +21,7 @@ User = get_user_model()
 
 
 class CreateJobView(EmployerRequiredMixin, CreateView):
-    """Employer creates a new job post."""
+   
     model = Job
     form_class = JobForm
     template_name = 'jobapp/post-job.html'
@@ -34,14 +34,15 @@ class CreateJobView(EmployerRequiredMixin, CreateView):
     def form_valid(self, form):
         instance = form.save(commit=False)
         instance.user = self.request.user
+        instance.is_published = True 
         instance.save()
         form.save_m2m()
-        messages.success(self.request, 'You are successfully posted your job! Please wait for review.')
+        messages.success(self.request, 'You have successfully posted your job!')
         return redirect(reverse_lazy('jobapp:single-job', kwargs={'id': instance.id}))
 
 
 class JobEditView(EmployerRequiredMixin, UpdateView):
-    """Employer edits an existing job post."""
+    
     model = Job
     form_class = JobEditForm
     template_name = 'jobapp/job-edit.html'
@@ -62,7 +63,7 @@ class JobEditView(EmployerRequiredMixin, UpdateView):
 
 
 class DeleteJobView(EmployerRequiredMixin, DeleteView):
-    """Employer deletes a job post."""
+    
     model = Job
     pk_url_kwarg = 'id'
     success_url = reverse_lazy('jobapp:dashboard')
@@ -70,15 +71,20 @@ class DeleteJobView(EmployerRequiredMixin, DeleteView):
     def get_queryset(self):
         return Job.objects.filter(user=self.request.user)
 
-    def form_valid(self, form):
+    def delete(self, request, *args, **kwargs):
         # Invalidate cache before deleting
-        cache.delete(str(self.get_object().id))
+        self.object = self.get_object()
+        cache.delete(str(self.object.id))
         messages.success(self.request, 'Your Job Post was successfully deleted!')
-        return super().form_valid(form)
+        return super().delete(request, *args, **kwargs)
+
+    # Allow GET requests for AJAX compatibility
+    def get(self, request, *args, **kwargs):
+        return self.delete(request, *args, **kwargs)
 
 
 class MakeCompleteJobView(EmployerRequiredMixin, View):
-    """Employer marks a job as closed. (Custom action — kept as View subclass)"""
+   
     def post(self, request, id):
         try:
             toggle_job_status(request.user.id, id)
@@ -93,7 +99,7 @@ class MakeCompleteJobView(EmployerRequiredMixin, View):
 
 
 class AllApplicantsView(EmployerRequiredMixin, ListView):
-    """Employer views all applicants for a specific job."""
+   
     template_name = 'jobapp/all-applicants.html'
     context_object_name = 'all_applicants'
 
@@ -129,7 +135,7 @@ class AllApplicantsView(EmployerRequiredMixin, ListView):
 
 
 class ApplicantDetailsView(EmployerRequiredMixin, DetailView):
-    """Employer views details of a specific applicant."""
+    
     model = User
     template_name = 'jobapp/applicant-details.html'
     context_object_name = 'applicant'
@@ -137,14 +143,14 @@ class ApplicantDetailsView(EmployerRequiredMixin, DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Get the application record to find the job
+       
         applicant_id = self.request.GET.get('applicant_id')
         if applicant_id:
             applicant_record = get_object_or_404(Applicant, id=applicant_id)
             context['applicant_record'] = applicant_record
             context['job'] = applicant_record.job
             
-            # Add skill matching information
+
             matched_count = get_skill_match_count(self.object.id, applicant_record.job_id)
             required_count = get_job_required_skills_count(applicant_record.job_id)
             
@@ -159,7 +165,7 @@ class ApplicantDetailsView(EmployerRequiredMixin, DetailView):
 
 
 class UpdateApplicantStatusView(EmployerRequiredMixin, View):
-    """Employer updates the status of an application (Accepted/Rejected)."""
+    
     def post(self, request, id):
         applicant = get_object_or_404(Applicant, id=id)
         # Ensure the employer owns the job

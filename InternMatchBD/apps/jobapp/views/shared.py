@@ -22,8 +22,10 @@ def dashboard_view(request):
             total_applicants[job.id] = count
 
     if request.user.role == 'employee':
-        savedjobs = BookmarkJob.objects.filter(user=request.user.id)
-        appliedjobs = Applicant.objects.filter(user=request.user.id)
+        # Get bookmarked jobs that are not deleted
+        savedjobs = BookmarkJob.objects.filter(user=request.user.id, job__is_deleted=False)
+        # Get applied jobs where the job is not deleted
+        appliedjobs = Applicant.objects.filter(user=request.user.id, job__is_deleted=False)
 
     context = {
         'jobs': jobs,

@@ -1,21 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView, ListView
 from django.db.models import F
 from jobapp.models import Job
 from jobapp.selectors import get_listed_jobs, search_jobs
+from jobapp.constants import CONTACT_INFO
 
 User = get_user_model()
 
 
 def home_view(request):
-    """
-    Home page — kept as FBV due to AJAX + stats logic.
-    """
-    published_jobs = Job.objects.filter(is_published=True).order_by('-updated_at')
+   
+    published_jobs = Job.objects.filter(is_published=True, is_deleted=False).order_by('-updated_at')
     jobs = published_jobs.filter(is_closed=False)
     total_candidates = User.objects.filter(role='employee').count()
     total_companies = User.objects.filter(role='employer').count()
@@ -36,7 +35,7 @@ def home_view(request):
         }
         return JsonResponse(data)
 
-    # Cache stats for 15 minutes
+    
     stats = cache.get('home_stats')
     if not stats:
         stats = {
@@ -58,17 +57,24 @@ def home_view(request):
 
 
 def about_view(request):
-    """
-    About page — static content about InternMatch BD platform.
-    """
+    
     context = {
         'page_title': 'About InternMatch BD',
     }
     return render(request, 'jobapp/about.html', context)
 
 
+def contact_view(request):
+    
+    context = {
+        'page_title': 'Contact InternMatch BD',
+        'contact_info': CONTACT_INFO,
+    }
+    return render(request, 'jobapp/contact.html', context)
+
+
 class JobListView(ListView):
-    """All published open jobs, or all jobs if viewing own profile."""
+    
     template_name = 'jobapp/job-list.html'
     context_object_name = 'page_obj'
     paginate_by = 12
@@ -76,7 +82,7 @@ class JobListView(ListView):
     def get_queryset(self):
         user_id = self.request.GET.get('user_id')
         if user_id:
-            # If viewing own jobs (logged in as the job poster), show all jobs
+            # If viewing own jobs (logged in as the job poster), show all active jobs
             if self.request.user.is_authenticated and str(self.request.user.id) == user_id:
                 return Job.objects.prefetch_related('skills').select_related('user').filter(user_id=user_id).order_by('-updated_at')
             # Otherwise, only show published and open jobs
@@ -85,7 +91,7 @@ class JobListView(ListView):
 
 
 class SingleJobView(DetailView):
-    """Single job detail page with related jobs and caching."""
+   
     template_name = 'jobapp/job-single.html'
     context_object_name = 'job'
     pk_url_kwarg = 'id'
@@ -93,23 +99,58 @@ class SingleJobView(DetailView):
     def get_object(self, queryset=None):
         job_id = self.kwargs['id']
         
-        # Increment views_count safely in DB
-        Job.objects.filter(id=job_id).update(views_count=F('views_count') + 1)
-        
+        # Try to get from cache first
         job = cache.get(job_id)
-        if not job:
-            job = get_object_or_404(Job, id=job_id)
+        if job is None:
+            # Check if job exists (active jobs only)
+            try:
+                job = Job.objects.get(id=job_id)
+            except Job.DoesNotExist:
+                # If not found in active jobs, check if it exists at all and if user is the owner
+                if self.request.user.is_authenticated:
+                    try:
+                        job = Job.all_objects.get(id=job_id, user=self.request.user)
+                    except Job.DoesNotExist:
+                        # Job doesn't exist or user is not the owner
+                        raise Http404("Job not found")
+                else:
+                    # Not authenticated, can't view non-published jobs
+                    raise Http404("Job not found")
+            
             cache.set(job_id, job, 60 * 15)
-        else:
-            # Refresh views_count in cached object
-            job.views_count += 1
-            cache.set(job_id, job, 60 * 15)
+        
+       
+        if job.is_deleted and (not self.request.user.is_authenticated or job.user != self.request.user):
+            raise Http404("Job not found")
+        
+        if not job.is_published and (not self.request.user.is_authenticated or job.user != self.request.user):
+            raise Http404("Job not found")
+        
+        Job.objects.filter(id=job_id).update(views_count=F('views_count') + 1)
+        job.views_count += 1
+        cache.set(job_id, job, 60 * 15)
             
         return job
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        related_job_list = self.object.tags.similar_objects()
+        try:
+            related_job_list = self.object.tags.similar_objects()
+        except (KeyError, Exception):
+            
+            tag_ids = self.object.tags.values_list('id', flat=True)
+            if tag_ids:
+                related_job_list = Job.objects.filter(
+                    tags__id__in=tag_ids
+                ).exclude(id=self.object.id).distinct().order_by('-updated_at')[:20]
+            else:
+               
+                related_job_list = Job.objects.filter(
+                    job_type=self.object.job_type,
+                    is_published=True,
+                    is_deleted=False
+                ).exclude(id=self.object.id).order_by('-updated_at')[:20]
+        
         paginator = Paginator(related_job_list, 5)
         page_number = self.request.GET.get('page')
         context['page_obj'] = paginator.get_page(page_number)
@@ -118,7 +159,7 @@ class SingleJobView(DetailView):
 
 
 class SearchResultView(ListView):
-    """Job search results with multiple filter fields."""
+    
     template_name = 'jobapp/result.html'
     context_object_name = 'page_obj'
     paginate_by = 10
